@@ -52,12 +52,18 @@ app.post("/api/v1/tours", (req, res) => {
 
 //handling get specific tour
 app.get("/api/v1/tours/:id", (req, res) => {
-  console.log(req.params);
+  const tour = toursList.find((tour) => tour.id === Number(req.params.id));
+  if (!tour) {
+    return res.status(404).json({
+      status: "failed",
+      message: "Could not find a tour with this specific id",
+    });
+  }
   const id = Number(req.params.id);
   res.status(200).json({
     status: "success",
     data: {
-      tour: toursList[id],
+      tour,
     },
   });
 });
