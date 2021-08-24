@@ -1,0 +1,22 @@
+{
+  "name": "natoursnodejs",
+  "version": "1.0.0",
+  "description": "Learning nodeJS, express and mongoDB",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ramsar7002/natoursNodeJS.git"
+  },
+  "author": "Ram Sarfian",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ramsar7002/natoursNodeJS/issues"
+  },
+  "homepage": "https://github.com/ramsar7002/natoursNodeJS#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
