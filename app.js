@@ -93,10 +93,7 @@ const deleteTour = (req, res) => {
     });
   }
 
-  console.log(toursList.length);
   toursList.splice(index, 1);
-  console.log(toursList.length);
-
   fs.writeFile(
     `${__dirname}/dev-data/data/tours-simple.json`,
     JSON.stringify(toursList),
@@ -109,19 +106,18 @@ const deleteTour = (req, res) => {
 };
 
 //handling tours get request
-app.get("/api/v1/tours", getAllTours);
+//handling post new tour request
+
+app.route("/api/v1/tours").get(getAllTours).post(newTour);
 
 //handling get specific tour
-app.get("/api/v1/tours/:id", getTour);
-
-//handling post new tour request
-app.post("/api/v1/tours", newTour);
-
 //handling patch request
-app.patch("/api/v1/tours/:id", changeTour);
-
 //handling delete request
-app.delete("/api/v1/tours/:id", deleteTour);
+app
+  .route("/api/v1/tours/:id")
+  .get(getTour)
+  .patch(changeTour)
+  .delete(deleteTour);
 
 const port = 3000;
 app.listen(port, () => {
