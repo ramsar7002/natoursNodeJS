@@ -5,6 +5,28 @@ const toursList = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
 
+//validate id
+exports.checkId = (req, res, next, val) => {
+  const tour = toursList.find((tour) => tour.id === Number(val));
+  if (!tour) {
+    return res.status(404).json({
+      status: "failed",
+      message: "Could not find a tour with this specific id",
+    });
+  }
+  next();
+};
+
+exports.checkBody = (req, res, next) => {
+  if (!req.body.name || !req.body.price) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Missing name or price",
+    });
+  }
+  next();
+};
+
 //handle routs
 exports.getAllTours = (req, res) => {
   console.log(req.requestTime);
@@ -19,14 +41,9 @@ exports.getAllTours = (req, res) => {
 };
 
 exports.getTour = (req, res) => {
-  const tour = toursList.find((tour) => tour.id === Number(req.params.id));
-  if (!tour) {
-    return res.status(404).json({
-      status: "failed",
-      message: "Could not find a tour with this specific id",
-    });
-  }
-  const id = Number(req.params.id);
+  const id = +req.params.id;
+  const tour = toursList.find((tour) => tour.id === id);
+
   res.status(200).json({
     status: "success",
     data: {
@@ -56,12 +73,7 @@ exports.newTour = (req, res) => {
 exports.changeTour = (req, res) => {
   const id = +req.params.id;
   const tour = toursList.find((tour) => tour.id === id);
-  if (!tour) {
-    return res.status(404).json({
-      status: "failed",
-      message: "Tour not found",
-    });
-  }
+
   //id found
   const index = toursList.findIndex((tour) => tour.id === id);
   const { name, duration, difficulty } = req.body;
@@ -84,12 +96,6 @@ exports.changeTour = (req, res) => {
 exports.deleteTour = (req, res) => {
   const id = +req.params.id;
   const index = toursList.findIndex((tour) => tour.id === id);
-  if (!index) {
-    return res.status(404).json({
-      status: "failed",
-      message: "Tour no found",
-    });
-  }
 
   toursList.splice(index, 1);
   fs.writeFile(
