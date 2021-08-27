@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require('fs');
 
 const users = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/users.json`)
@@ -7,7 +7,7 @@ const users = JSON.parse(
 //USERS HANDLERS
 exports.getAllUsers = (req, res) => {
   res.status(200).json({
-    status: "success",
+    status: 'success',
     data: {
       users,
     },
@@ -16,28 +16,28 @@ exports.getAllUsers = (req, res) => {
 
 exports.createUser = (req, res) => {
   res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined",
+    status: 'error',
+    message: 'This route is not yet defined',
   });
 };
 
 exports.getUser = (req, res) => {
   res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined",
+    status: 'error',
+    message: 'This route is not yet defined',
   });
 };
 
 exports.updateUser = (req, res) => {
   res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined",
+    status: 'error',
+    message: 'This route is not yet defined',
   });
 };
 
 exports.deleteUser = (req, res) => {
   res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined",
+    status: 'error',
+    message: 'This route is not yet defined',
   });
 };

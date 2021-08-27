@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require('fs');
 
 //get the tours as object
 const toursList = JSON.parse(
@@ -7,11 +7,11 @@ const toursList = JSON.parse(
 
 //validate id
 exports.checkId = (req, res, next, val) => {
-  const tour = toursList.find((tour) => tour.id === Number(val));
+  const tour = toursList.find((t) => t.id === Number(val));
   if (!tour) {
     return res.status(404).json({
-      status: "failed",
-      message: "Could not find a tour with this specific id",
+      status: 'failed',
+      message: 'Could not find a tour with this specific id',
     });
   }
   next();
@@ -20,8 +20,8 @@ exports.checkId = (req, res, next, val) => {
 exports.checkBody = (req, res, next) => {
   if (!req.body.name || !req.body.price) {
     return res.status(400).json({
-      status: "failed",
-      message: "Missing name or price",
+      status: 'failed',
+      message: 'Missing name or price',
     });
   }
   next();
@@ -31,7 +31,7 @@ exports.checkBody = (req, res, next) => {
 exports.getAllTours = (req, res) => {
   console.log(req.requestTime);
   res.status(200).json({
-    status: "success",
+    status: 'success',
     requestedAt: req.requestTime,
     results: toursList.length,
     data: {
@@ -42,10 +42,10 @@ exports.getAllTours = (req, res) => {
 
 exports.getTour = (req, res) => {
   const id = +req.params.id;
-  const tour = toursList.find((tour) => tour.id === id);
+  const tour = toursList.find((t) => t.id === id);
 
   res.status(200).json({
-    status: "success",
+    status: 'success',
     data: {
       tour,
     },
@@ -54,14 +54,16 @@ exports.getTour = (req, res) => {
 
 exports.newTour = (req, res) => {
   const newId = toursList[toursList.length - 1].id + 1;
-  const newTour = Object.assign({ id: newId }, req.body);
+
+  // eslint-disable-next-line node/no-unsupported-features/es-syntax
+  const newTour = { id: newId, ...req.body };
   toursList.push(newTour);
   fs.writeFile(
     `${__dirname}/dev-data/data/tours-simple.json`,
     JSON.stringify(toursList),
-    (err) => {
+    () => {
       res.status(201).json({
-        status: "success",
+        status: 'success',
         data: {
           tour: newTour,
         },
@@ -72,10 +74,9 @@ exports.newTour = (req, res) => {
 
 exports.changeTour = (req, res) => {
   const id = +req.params.id;
-  const tour = toursList.find((tour) => tour.id === id);
 
   //id found
-  const index = toursList.findIndex((tour) => tour.id === id);
+  const index = toursList.findIndex((t) => t.id === id);
   const { name, duration, difficulty } = req.body;
   if (name) toursList[index].name = name;
   if (duration) toursList[index].duration = duration;
@@ -83,9 +84,9 @@ exports.changeTour = (req, res) => {
   fs.writeFile(
     `${__dirname}/dev-data/data/tours-simple.json`,
     JSON.stringify(toursList),
-    (err) =>
+    () =>
       res.status(200).json({
-        status: "success",
+        status: 'success',
         data: {
           tour: toursList[index],
         },
@@ -101,9 +102,9 @@ exports.deleteTour = (req, res) => {
   fs.writeFile(
     `${__dirname}/dev-data/data/tours-simple.json`,
     JSON.stringify(toursList),
-    (err) =>
+    () =>
       res.status(204).json({
-        status: "succeed",
+        status: 'succeed',
         data: null,
       })
   );
