@@ -1,37 +1,28 @@
+/* eslint-disable node/no-unsupported-features/es-syntax */
 //const fs = require('fs');
 const Tour = require('../models/tourModel');
 
-//get the tours as object
-// const toursList = JSON.parse(
-//   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
-// );
-
-//validate id
-// exports.checkId = (req, res, next, val) => {
-//   const tour = toursList.find((t) => t.id === Number(val));
-//   if (!tour) {
-//     return res.status(404).json({
-//       status: 'fail',
-//       message: 'Could not find a tour with this specific id',
-//     });
-//   }
-//   next();
-// };
-
-// exports.checkBody = (req, res, next) => {
-//   if (!req.body.name || !req.body.price) {
-//     return res.status(400).json({
-//       status: 'fail',
-//       message: 'Missing name or price',
-//     });
-//   }
-//   next();
-// };
-
-//handle routs
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    //BUILD QUERY
+    const queryObj = { ...req.query };
+    const excluedFields = ['page', 'sort', 'limit', 'fields'];
+    excluedFields.forEach((field) => delete queryObj[field]);
+    console.log(req.query);
+    //filtering - option number 1
+    const query = Tour.find(req.query);
+
+    // eslint-disable-next-line prettier/prettier
+    // const query = Tour.find()
+    //   .where('duration')
+    //   .equals(5)
+    //   .where('difficulty')
+    //   .equals('easy');
+
+    //EXECUTE QUERY
+    const tours = await query;
+
+    //SEND RESPONSE
     res.status(200).json({
       status: 'success',
       results: tours.length,
