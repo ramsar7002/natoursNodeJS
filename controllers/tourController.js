@@ -2,15 +2,22 @@
 //const fs = require('fs');
 const Tour = require('../models/tourModel');
 
+exports.aliasTopTour = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAvarage,price';
+  req.query.fields = 'name,price,ratingsAvarages,summary,difficult';
+  next();
+};
+
 exports.getAllTours = async (req, res) => {
   try {
     //BUILD QUERY
-    //Filtering
+    //1. Filtering
     const queryObj = { ...req.query };
     const excluedFields = ['page', 'sort', 'limit', 'fields'];
     excluedFields.forEach((field) => delete queryObj[field]);
 
-    //advanced filtering
+    //1.1 advanced filtering
     // {difficulty: 'easy', duration: {&gte:5}}
     //adding a $ sign to gte,gt,lte,lt
     let queryStr = JSON.stringify(queryObj);
@@ -19,13 +26,35 @@ exports.getAllTours = async (req, res) => {
 
     let query = Tour.find(queryStrObj);
 
-    //SORTING
+    //2. SORTING
     if (req.query.sort) {
       const sortBy = req.query.sort.split(',').join(' ');
       query = query.sort(sortBy);
-    } else {
+    } else if (!req.query.page) {
       query = query.sort('-createdAt');
     }
+
+    //3. FIELED LIMITING
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' ');
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v');
+    }
+
+    //4. Pagination
+    const page = +req.query.page || 1;
+    const limit = +req.query.limit || 10;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+      if (skip >= numTours) {
+        throw new Error('This page may not exist');
+      }
+    }
+
     //EXECUTE QUERY
     const tours = await query;
 
@@ -40,7 +69,7 @@ exports.getAllTours = async (req, res) => {
   } catch (err) {
     res.status(404).json({
       status: 'fail',
-      message: err,
+      message: err.message,
     });
   }
 };
