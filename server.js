@@ -22,7 +22,7 @@ app.listen(port, () => {
   console.log(`Running on port ${port}...`);
 });
 
-//Glocal promise rejection
+//Global promise rejection
 process.on('unhandledRejection', (err) => {
   console.log(err.name, err.message);
 });
